@@ -8,6 +8,9 @@
     var imgData;
     var rate;//縦横比
     var power;//元画像との倍率
+
+    const SMILE = 100;
+
 	function PutLog(node, str) {
 		$(node).append('<plaintext>' + str);
 	}
@@ -141,6 +144,35 @@
         return this;
 	};
 
+var numMaterials = 3;//fileArry.length;    // ①読み込みたい画像の数
+var loadedCounter = 0;           // ②ロード済Imageオブジェクト数のカウンタ
+var imgObjArry = [];              // ③ロード済Imageオブジェクト用配列
+
+function loadImges(ctx){
+  var imgObj = new Image();               // 新しい Image オブジェクトを作る
+  imgObj.addEventListener('load',         // loadイベントのリッスン
+    function(){
+      loadedCounter++;               // 画像１枚読み込みにつきインクリメント
+      imgObjArry.push(imgObj);          // 読み込み済画像を③に格納
+      if(numMaterials == loadedCounter){   // ①の数 ＝ ②の数ならば描画する
+         display(ctx);
+      }else{
+         loadImges(ctx);                // すべて読み込まれていなければ次を読込
+      }
+  },false);
+
+  imgObj.src = "/img/smile.png";  // ソースのパスを設定
+
+}
+
+function display(ctx){
+    for (var i in imgObjArry){
+        ctx.drawImage(imgObjArry[i], i*10, i*10);
+        imgObjArry[i] = null;
+    }
+}
+
+
 /* xmlから顔画像の必要な要素を取り出す
  * 左右眼の中心、外内端、口中心、外内端、笑顔レベル
  * 画像のサイズ
@@ -236,7 +268,7 @@ function viewImageURL(imageURL, imgData){
   $('#imageArea').append('<canvas id="c1" width='+ cWidth +' height=' + cHeight +'></canvas>');
   //画像オブジェクトに任意の画像を読み込み
   var img = new Image();
-  //これを入れないと canvas使用時にエラーになる　Uncaught SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': the canvas has been tainted by cross-origin data.
+  //これを入れないと canvas使用時にエラーになる Uncaught SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': the canvas has been tainted by cross-origin data.
   img.crossOrigin = "anonymous";
 
   //画像のパス指定
@@ -259,6 +291,8 @@ $('#smileBtn').on('click', function(e){
   console.log(imgData);
   //人数と笑っている人がどれかわかる、しきい値を取れる
   //Step 1 顔の特徴点に点を打つ
+  var imgPointArr = [];
+
   var faces = imgData['faces'];
   for(var i = 0; i < faces.length; i++){
     var v = faces[i];
@@ -278,19 +312,100 @@ $('#smileBtn').on('click', function(e){
         ctx.arc(dot['x'] * power, dot['y'] * power,3,0,2*Math.PI,true);
         //arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
         ctx.fill();
+        ctx.save();
       }// elseの時はSmile Level
     }
 	}
+	var smileLevel = v['smileLevel'];
+	var mouseLeft =  v['mouthLeftEnd'];
+	var mouseRight =  v['mouthRightEnd'];
 
+	//口の大きさのマンハッタン距離
+	var mouseDiff = Math.abs(mouseRight['x'] -mouseLeft['x']) + Math.abs(mouseRight['y'] -mouseLeft['y']);
+	console.log(mouseDiff);
+
+	console.log(smileLevel);
+	//笑顔判定
+	if (smileLevel < SMILE){
+		imgPointArr.push([mouseLeft, mouseRight, mouseDiff]);
+
+	  // while( !loadFinFlg ) {
+	  // 	console.log('aaa');
+   //    }
+	}
   }
-  	// 32*32ピクセルのImageDataオブジェクト作成
-		var aaa = ctx.getImageData(0, 0, 32, 32);
-		var bbb = ctx.createImageData(32, 32);
-		//データを別のところに置く
-		bbb = aaa;
-		// CanvasのコンテキストにImageDataを描画
-		ctx.putImageData(bbb, 32, 32);
+
+console.log('===============');
+
+//  imgArr = [];
+  for(var i = 0; i < imgPointArr.length; i++){
+  	console.log(imgPointArr[i][0]['x']);
+  	  	console.log(imgPointArr[i][0]['y']);
+  	x = imgPointArr[i][0]['x'];
+  	y = imgPointArr[i][0]['y'];
+
+ }
+loadImges(ctx);
+//   	// 32*32ピクセルのImageDataオブジェクト作成
+// 		var aaa = ctx.getImageData(100, 0, 200, 200);
+// 		var bbb = ctx.createImageData(200, 200);
+// 		//データを別のところに置く
+// 		bbb = aaa;
+// 		rotation = Math.PI * 90 /180;
+// 		ctx.rotate(rotation);
+// //context.drawImage(inMemoryCanvas, x, y)
+// 	//ctx.rotate(-rotation);
+// 		rotate(ctx, c1, rotation,rotate(ctx, c1, rotation));
+
+// 		rotation = Math.PI * 90 /180;
+
+// 		rotate(ctx, c1, rotation);
+
 });
 
+//var fileArry = ['imgName1','imgName2'...]; // 読み込みたい画像のパスの配列
+
+
+
+
+
+
+
+//以下使ってない
+var myImageData, rotating = false;
+
+
+var rotate = function (context, canvas, angle, callback) {
+	var cw = canvas.width;
+	var ch = canvas.height;
+    if (!rotating) {
+        rotating = true;
+        // store current data to an image
+        myImageData = new Image();
+        myImageData.src = canvas.toDataURL();
+
+       myImageData.onload = function () {
+            // reset the canvas with new dimensions
+            canvas.width = ch;
+            canvas.height = cw;
+            cw = canvas.width;
+            ch = canvas.height;
+
+            context.save();
+            // translate and rotate
+            context.translate(cw, ch / cw);
+            context.rotate(angle);
+            // draw the previows image, now rotated
+            context.drawImage(myImageData, 0, 0);
+            context.restore();
+
+            // clear the temporary image
+            myImageData = null;
+
+            rotating = false;
+        }
+    }
+    callback;
+}
 
 })(jQuery);
