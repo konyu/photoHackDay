@@ -34,6 +34,7 @@
 				}
 				var xs = new XMLSerializer();
 	    		PutLog(divNode, xs.serializeToString(xmlDoc));
+	    		xmlPerser(xmlDoc);
 	    	},
 	    	error: function(xhr, status, err){
 	    		PutLog(divNode, '問題が発生しました:' + status + ' error:' + err);
@@ -67,14 +68,16 @@
 	    	url:url,
 	    	contentType: false,
 	    	processData: false,
-	    	data:formData,
+	    	data:xml,
 	    	success: function(xmlDoc){
 	    		PutLog(divNode, '正常に送信できました');
 				if (console.dirxml) {
 					console.dirxml(xmlDoc);
 				}
 				var xs = new XMLSerializer();
+				alert('aaaaaa');
 	    		PutLog(divNode, xs.serializeToString(xmlDoc));
+	    		xmlPerser(xmlDoc);
 	    	},
 	    	error: function(xhr, status, err){
 	    		PutLog(divNode, '問題が発生しました:' + status + ' error:' + err);
@@ -137,4 +140,24 @@
         return this;
 	};
 
+//////////////////////
+function xmlPerser(xml){
+  //顔のノードを全部取り出す。
+  var faces = [];
+  console.log(xml);
+  //一人ひとりの顔データを取り出す
+  $(xml).find('detectionFaceInfo').each(function(i){
+    //人数分の処理ができる
+    console.log($(this).text());
+    var face = {};
+    //
+    face['smileLevel'] = $(this).find('smileLevel').text();
+
+
+    faces.push(face);
+  });
+  console.log('==============');
+  console.log(faces[0]['smileLevel']);
+
+}
 })(jQuery);
