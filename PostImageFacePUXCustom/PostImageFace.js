@@ -34,7 +34,7 @@
 				}
 				var xs = new XMLSerializer();
 	    		PutLog(divNode, xs.serializeToString(xmlDoc));
-	    		xmlPerser(xmlDoc);
+	    		getFaceDataFromXML(xmlDoc);
 	    	},
 	    	error: function(xhr, status, err){
 	    		PutLog(divNode, '問題が発生しました:' + status + ' error:' + err);
@@ -141,23 +141,60 @@
 	};
 
 //////////////////////
-function xmlPerser(xml){
+function getFaceDataFromXML(xml){
   //顔のノードを全部取り出す。
   var faces = [];
   console.log(xml);
   //一人ひとりの顔データを取り出す
   $(xml).find('detectionFaceInfo').each(function(i){
     //人数分の処理ができる
-    console.log($(this).text());
+    //console.log($(this).text());
     var face = {};
-    //
+    //笑顔レベル取得
     face['smileLevel'] = $(this).find('smileLevel').text();
 
+    //左目中心取得
+    var pos = {};
+    pos['x'] = $(this).find('leftBlackEyeCenter').attr('x');
+    pos['y'] = $(this).find('leftBlackEyeCenter').attr('y');
+    face['leftBlackEyeCenter'] = pos;
+
+    //左目外側取得
+    pos = {};
+    pos['x'] = $(this).find('leftEyeOutsideEnd').attr('x');
+    pos['y'] = $(this).find('leftEyeOutsideEnd').attr('y');
+    face['leftEyeOutsideEnd'] = pos;
+
+    //左目内側取得
+    pos = {};
+    pos['x'] = $(this).find('leftEyeInsideEnd').attr('x');
+    pos['y'] = $(this).find('leftEyeInsideEnd').attr('y');
+    face['leftEyeInsideEnd'] = pos;
+
+    //右目中央取得
+    pos = {};
+    pos['x'] = $(this).find('rightBlackEyeCenter').attr('x');
+    pos['y'] = $(this).find('rightBlackEyeCenter').attr('y');
+    face['rightBlackEyeCenter'] = pos;
+
+    //右目外側取得
+    pos = {};
+    pos['x'] = $(this).find('rightEyeOutsideEnd').attr('x');
+    pos['y'] = $(this).find('rightEyeOutsideEnd').attr('y');
+    face['rightEyeOutsideEnd'] = pos;
+
+    //右目内側取得
+    pos = {};
+    pos['x'] = $(this).find('rightEyeInsideEnd').attr('x');
+    pos['y'] = $(this).find('rightEyeInsideEnd').attr('y');
+    face['rightEyeInsideEnd'] = pos;
 
     faces.push(face);
   });
   console.log('==============');
-  console.log(faces[0]['smileLevel']);
+  console.log(faces);
 
+  return faces;
 }
+
 })(jQuery);
