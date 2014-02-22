@@ -14,9 +14,6 @@
 	 */
 	$.fn.PostImageURL = function(api_key, in_url) {
 		var divNode = this[0];
-		PutLog(divNode, '------------------------------------');
-		PutLog(divNode, 'APIKEY:' + api_key);
-		PutLog(divNode, 'IMAGE:' + decodeURIComponent(in_url));
 		// パラメータの生成
 		var data = {
 			"apiKey" : api_key,
@@ -34,7 +31,8 @@
 				}
 				var xs = new XMLSerializer();
 	    		PutLog(divNode, xs.serializeToString(xmlDoc));
-	    		getFaceDataFromXML(xmlDoc);
+	    		imgData = getFaceDataFromXML(xmlDoc);
+	    		viewImageURL(in_url, imgData);
 	    	},
 	    	error: function(xhr, status, err){
 	    		PutLog(divNode, '問題が発生しました:' + status + ' error:' + err);
@@ -77,7 +75,8 @@
 				var xs = new XMLSerializer();
 				alert('aaaaaa');
 	    		PutLog(divNode, xs.serializeToString(xmlDoc));
-	    		xmlPerser(xmlDoc);
+	    		imgData = xmlPerser(xmlDoc);
+	    		viewImageURL(imageURL, imgData);
 	    	},
 	    	error: function(xhr, status, err){
 	    		PutLog(divNode, '問題が発生しました:' + status + ' error:' + err);
@@ -140,61 +139,92 @@
         return this;
 	};
 
-//////////////////////
+/* xmlから顔画像の必要な要素を取り出す
+ * 左右眼の中心、外内端、口中心、外内端、笑顔レベル
+ * 画像のサイズ
+*/
 function getFaceDataFromXML(xml){
   //顔のノードを全部取り出す。
+  var imgData = {};
   var faces = [];
   console.log(xml);
+  //画像のサイズを取り出す
+  imgData['width'] = parseInt($(xml).find('width').text());
+  imgData['height'] = parseInt($(xml).find('height').text());
   //一人ひとりの顔データを取り出す
   $(xml).find('detectionFaceInfo').each(function(i){
     //人数分の処理ができる
     //console.log($(this).text());
     var face = {};
     //笑顔レベル取得
-    face['smileLevel'] = $(this).find('smileLevel').text();
+    face['smileLevel'] = parseInt($(this).find('smileLevel').text());
 
     //左目中心取得
     var pos = {};
-    pos['x'] = $(this).find('leftBlackEyeCenter').attr('x');
-    pos['y'] = $(this).find('leftBlackEyeCenter').attr('y');
+    pos['x'] = parseInt($(this).find('leftBlackEyeCenter').attr('x'));
+    pos['y'] = parseInt($(this).find('leftBlackEyeCenter').attr('y'));
     face['leftBlackEyeCenter'] = pos;
 
     //左目外側取得
     pos = {};
-    pos['x'] = $(this).find('leftEyeOutsideEnd').attr('x');
-    pos['y'] = $(this).find('leftEyeOutsideEnd').attr('y');
+    pos['x'] = parseInt($(this).find('leftEyeOutsideEnd').attr('x'));
+    pos['y'] = parseInt($(this).find('leftEyeOutsideEnd').attr('y'));
     face['leftEyeOutsideEnd'] = pos;
 
     //左目内側取得
     pos = {};
-    pos['x'] = $(this).find('leftEyeInsideEnd').attr('x');
-    pos['y'] = $(this).find('leftEyeInsideEnd').attr('y');
+    pos['x'] = parseInt($(this).find('leftEyeInsideEnd').attr('x'));
+    pos['y'] = parseInt($(this).find('leftEyeInsideEnd').attr('y'));
     face['leftEyeInsideEnd'] = pos;
 
     //右目中央取得
     pos = {};
-    pos['x'] = $(this).find('rightBlackEyeCenter').attr('x');
-    pos['y'] = $(this).find('rightBlackEyeCenter').attr('y');
+    pos['x'] = parseInt($(this).find('rightBlackEyeCenter').attr('x'));
+    pos['y'] = parseInt($(this).find('rightBlackEyeCenter').attr('y'));
     face['rightBlackEyeCenter'] = pos;
 
     //右目外側取得
     pos = {};
-    pos['x'] = $(this).find('rightEyeOutsideEnd').attr('x');
-    pos['y'] = $(this).find('rightEyeOutsideEnd').attr('y');
+    pos['x'] = parseInt($(this).find('rightEyeOutsideEnd').attr('x'));
+    pos['y'] = parseInt($(this).find('rightEyeOutsideEnd').attr('y'));
     face['rightEyeOutsideEnd'] = pos;
 
     //右目内側取得
     pos = {};
-    pos['x'] = $(this).find('rightEyeInsideEnd').attr('x');
-    pos['y'] = $(this).find('rightEyeInsideEnd').attr('y');
+    pos['x'] = parseInt($(this).find('rightEyeInsideEnd').attr('x'));
+    pos['y'] = parseInt($(this).find('rightEyeInsideEnd').attr('y'));
     face['rightEyeInsideEnd'] = pos;
 
     faces.push(face);
   });
+  imgData['faces'] = faces;
   console.log('==============');
-  console.log(faces);
+  console.log(imgData);
 
-  return faces;
+  return imgData;
 }
+
+function viewImageURL(imageURL, imgData){
+  imgWidth = imgData['width'];
+  imgHeight = imgData['height'];
+  rate = imgHeight / imgWidth;
+
+  $('#imageArea').append('<canvas id="c1" width=500 height=800></canvas>');
+  //画像オブジェクトに任意の画像を読み込み
+  var img = new Image();
+  //画像のパス指定
+  img.src = imageURL;
+  //画像の読み込みが終わったら、canvasに貼付けを実行
+  img.onload = (function(){
+    //canvas(c1)のノードオブジェクト
+    var canvas = document.getElementById('c1');
+    //2Dコンテキストをctxに格納
+    var ctx = canvas.getContext('2d');
+    //読み込んだimgをcanvas(c1)に貼付け
+    ctx.drawImage(img, 0, 0, 500, 500 * rate);
+  });
+  return rate;
+}
+
 
 })(jQuery);

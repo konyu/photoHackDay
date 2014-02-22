@@ -13,6 +13,7 @@ $(function(){
 		var key = $("#apiKey").val();
 		var imageURL = $("#imageURL").val();
 		$('#res').PostImageURL(key, imageURL);
+		//$('body').viewImageURL(imageURL);
 	});
 	$('#inputFile').change(function() {
 		console.log( "inputFile change" );
@@ -45,6 +46,8 @@ $(function(){
 	<p>
 		base64Send:<input id="base64Send" type="file" />
 	</p>
+	<button id="smileBtn" value="">Smile $1</button>
+	<div id="imageArea"></div>
 	<!-- 実行結果表示 -->
 	<div id="res"></div>
 	</body>
