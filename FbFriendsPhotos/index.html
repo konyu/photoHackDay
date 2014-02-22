@@ -1,0 +1,128 @@
+<html ng-app>
+  <head></head>
+  <body>
+    <div id="fb-root"></div>
+    <script>
+      function MainCtrl($scope) {
+        $scope.isLoading = false;
+
+        $scope.getFriendPhotos = function() {
+          $scope.isLoading = true;
+          FB.api('me/friends?fields=photos.limit(10),name&limit=10',{fields: 'picture, source'}, function(response) {
+            $scope.isLoading = false;
+            if (!response || response.error) {
+              console.log('Error occured');
+            } else {
+              console.log('done');
+              $scope.friendPhotos = response.data;
+              $scope.$apply();
+            }
+          });
+        }
+
+        $scope.getFriends = function() {
+          FB.api('/me/friends', {fields: 'name', limit: 5}, function(response) {
+            $scope.friends = response.data;
+            $scope.$apply();
+          });
+        }
+
+        $scope.getPhotos = function(userId) {
+          FB.api('/' + userId + '/photos', {fields: 'picture, source'}, function(response) {
+            $scope.photos = response.data;
+            $scope.$apply();
+          });
+        }
+
+        $scope.fbLogOut = function() {
+          FB.logout();
+        }
+      }
+    </script>
+    
+    <!-- Facebook init start -->
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '654032674656324',
+          status     : true, // check login status
+          cookie     : true, // enable cookies to allow the server to access the session
+          xfbml      : true  // parse XFBML
+        });
+     
+        FB.Event.subscribe('auth.authResponseChange', function(response) {
+          if (response.status === 'connected') {
+            testAPI();
+          } else if (response.status === 'not_authorized') {
+            FB.login();
+          } else {
+            FB.login();
+          }
+        });
+      };
+    
+      (function(d){
+       var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement('script'); js.id = id; js.async = true;
+       js.src = "https://connect.facebook.net/ja_JP/all.js";
+       ref.parentNode.insertBefore(js, ref);
+      }(document));
+
+      function testAPI() {
+        console.log('Welcome!  Fetching your information.... ');
+        FB.api('/me', function(response) {
+          console.log('Good to see you, ' + response.name + '.');
+        });
+      }
+    </script>
+    <!-- Facebook init end  -->
+    
+    <!--
+      Below we include the Login Button social plugin. This button uses the JavaScript SDK to
+      present a graphical Login button that triggers the FB.login() function when clicked. -->
+    
+    <fb:login-button show-faces="true" scope="user_photos, friends_photos" width="200" max-rows="1"></fb:login-button>
+
+    <div ng-controller="MainCtrl">
+      <button ng-click="fbLogOut()">logout</button>
+
+      <hr>
+
+      <a ng-show="!isLoading" ng-click="getFriendPhotos()" href="">get friend photos</a>
+      <p ng-show="isLoading">loading...</p>
+      <!-- debug start -->
+      <pre>
+        {{friendPhotos | json}}
+      </pre>
+      <!-- debug end   -->
+
+      <ul>
+        <li ng-repeat="frPhoto in friendPhotos">
+          {{frPhoto.name}}
+          <ul>
+            <li ng-repeat="photo in frPhoto.photos.data"> <a ng-href="{{photo.link}}"><img ng-src={{photo.source}} alt="photo.id"></a> </li>
+          </ul>
+          <p ng-show="!frPhoto.photos">no data</p>
+        </li>
+      </ul>
+      <hr>
+
+      <button ng-click="getFriends()">get friends</button>
+      <ul>
+        <li ng-repeat="friend in friends">
+        <img ng-src="https://graph.facebook.com/{{friend.id}}/picture">
+        {{friend.name}}
+        <ul>
+          <li ng-repeat="photo in friend.photos">
+          {{photo.source}}
+          </li>
+        </ul>
+        </li>
+      </ul>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+  </body>
+</html>
+
