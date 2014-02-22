@@ -32,7 +32,7 @@
 				var xs = new XMLSerializer();
 	    		PutLog(divNode, xs.serializeToString(xmlDoc));
 	    		imgData = getFaceDataFromXML(xmlDoc);
-	    		viewImageURL(in_url, imgData);
+	    		rate = viewImageURL(in_url, imgData);
 	    	},
 	    	error: function(xhr, status, err){
 	    		PutLog(divNode, '問題が発生しました:' + status + ' error:' + err);
@@ -225,6 +225,11 @@ function viewImageURL(imageURL, imgData){
   });
   return rate;
 }
+
+$('#smileBtn').on('click', function(e){
+	alert('ssss')
+
+});
 
 
 })(jQuery);

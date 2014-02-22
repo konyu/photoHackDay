@@ -3,16 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <title>PostImageFace</title>
-<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-<script type="text/javascript" src="PostImageFace.js"></script>
-<script type="text/javascript">
-$(function(){
+</head>
+<body>
+	<h1>PostImageFace</h1>
+	<p>
+		URL:<input id="imageURL" type="text" value='https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-frc3/t1/1379366_469538066487660_451315449_n.jpg' /> <input id="submit"
+			type="button" value="実行"/>
+	</p>
+	<p>
+		inputFile:<input id="inputFile" type="file" />
+	</p>
+	<p>
+		base64Send:<input id="base64Send" type="file" />
+	</p>
+	<button id="smileBtn" value="">Smile $1</button>
+	<div id="imageArea"></div>
+	<!-- 実行結果表示 -->
+	<div id="res"></div>
+	<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="PostImageFace.js"></script>
+	<script type="text/javascript">
+	$(function(){
 
 	$("#submit").click(function() {
 		console.log( "imageURL Submit" );
 		var key = $("#apiKey").val();
 		var imageURL = $("#imageURL").val();
-		$('#res').PostImageURL(key, imageURL);
+		$('#res').PostImageURL('RCGHACKA02', imageURL);
 		//$('body').viewImageURL(imageURL);
 	});
 	$('#inputFile').change(function() {
@@ -28,27 +45,7 @@ $(function(){
 		$('#res').PostBase64Send(key, file);
 	});
 
-});
-</script>
-</head>
-<body>
-	<h1>PostImageFace</h1>
-	<p>
-		API KEY:<input id="apiKey" type="text" value='RCGHACKA02'/>
-	</p>
-	<p>
-		URL:<input id="imageURL" type="text" value='https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-frc3/t1/1379366_469538066487660_451315449_n.jpg' /> <input id="submit"
-			type="button" value="実行"/>
-	</p>
-	<p>
-		inputFile:<input id="inputFile" type="file" />
-	</p>
-	<p>
-		base64Send:<input id="base64Send" type="file" />
-	</p>
-	<button id="smileBtn" value="">Smile $1</button>
-	<div id="imageArea"></div>
-	<!-- 実行結果表示 -->
-	<div id="res"></div>
+	});
+	</script>
 	</body>
 </html>
