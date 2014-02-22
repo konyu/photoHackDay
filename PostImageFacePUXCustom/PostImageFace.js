@@ -282,7 +282,14 @@ $('#smileBtn').on('click', function(e){
     }
 	}
 
-  };
+  }
+  	// 32*32ピクセルのImageDataオブジェクト作成
+		var aaa = ctx.getImageData(0, 0, 32, 32);
+		var bbb = ctx.createImageData(32, 32);
+		//データを別のところに置く
+		bbb = aaa;
+		// CanvasのコンテキストにImageDataを描画
+		ctx.putImageData(bbb, 32, 32);
 });
 
 
