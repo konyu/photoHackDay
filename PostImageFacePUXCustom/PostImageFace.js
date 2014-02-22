@@ -5,6 +5,9 @@
 	// リクエストパス
 	var REQ_PATH = "/webapi/face.do";
 
+    var imgData;
+    var rate;//縦横比
+    var power;//元画像との倍率
 	function PutLog(node, str) {
 		$(node).append('<plaintext>' + str);
 	}
@@ -73,10 +76,9 @@
 					console.dirxml(xmlDoc);
 				}
 				var xs = new XMLSerializer();
-				alert('aaaaaa');
 	    		PutLog(divNode, xs.serializeToString(xmlDoc));
 	    		imgData = xmlPerser(xmlDoc);
-	    		viewImageURL(imageURL, imgData);
+	    		rate = viewImageURL(imageURL, imgData);
 	    	},
 	    	error: function(xhr, status, err){
 	    		PutLog(divNode, '問題が発生しました:' + status + ' error:' + err);
@@ -195,6 +197,24 @@ function getFaceDataFromXML(xml){
     pos['y'] = parseInt($(this).find('rightEyeInsideEnd').attr('y'));
     face['rightEyeInsideEnd'] = pos;
 
+    //口左端取得
+    pos = {};
+    pos['x'] = parseInt($(this).find('mouthLeftEnd').attr('x'));
+    pos['y'] = parseInt($(this).find('mouthLeftEnd').attr('y'));
+    face['mouthLeftEnd'] = pos;
+
+    //口右端取得
+    pos = {};
+    pos['x'] = parseInt($(this).find('mouthRightEnd').attr('x'));
+    pos['y'] = parseInt($(this).find('mouthRightEnd').attr('y'));
+    face['mouthRightEnd'] = pos;
+
+    //口中央取得
+    pos = {};
+    pos['x'] = parseInt($(this).find('mouthCenter').attr('x'));
+    pos['y'] = parseInt($(this).find('mouthCenter').attr('y'));
+    face['mouthCenter'] = pos;
+
     faces.push(face);
   });
   imgData['faces'] = faces;
@@ -207,9 +227,13 @@ function getFaceDataFromXML(xml){
 function viewImageURL(imageURL, imgData){
   imgWidth = imgData['width'];
   imgHeight = imgData['height'];
-  rate = imgHeight / imgWidth;
+  cWidth = 1000;
+  cHeight = 1000;
 
-  $('#imageArea').append('<canvas id="c1" width=500 height=800></canvas>');
+  rate = imgHeight / imgWidth;
+  power = cWidth / imgWidth;
+
+  $('#imageArea').append('<canvas id="c1" width='+ cWidth +' height=' + cHeight +'></canvas>');
   //画像オブジェクトに任意の画像を読み込み
   var img = new Image();
   //画像のパス指定
@@ -221,14 +245,39 @@ function viewImageURL(imageURL, imgData){
     //2Dコンテキストをctxに格納
     var ctx = canvas.getContext('2d');
     //読み込んだimgをcanvas(c1)に貼付け
-    ctx.drawImage(img, 0, 0, 500, 500 * rate);
+    ctx.drawImage(img, 0, 0, cWidth, cWidth * rate);
   });
   return rate;
 }
 
 $('#smileBtn').on('click', function(e){
-	alert('ssss')
+  var ctx = $('#c1')[0].getContext('2d');
+  console.log(rate);
+  console.log(imgData);
+  //人数と笑っている人がどれかわかる、しきい値を取れる
+  //Step 1 顔の特徴点に点を打つ
+  var faces = imgData['faces'];
+  for(var i = 0; i < faces.length; i++){
+    var v = faces[i];
+    console.log('v:', v);
+    for (key in v) {
+ //   	alert(key + " : " + v[key]);
+      console.log('dot:', v[key]);
+      var dot = v[key];
+      if(dot['x'] != undefined ){
+      	console.log('x:', dot['x']);
+      	console.log('y:', dot['y']);
+        ctx.globalAlpha = 0.9; //塗りつぶしの透明度設定
+        ctx.fillStyle = 'rgb(255, 80, 77)';
+        ctx.beginPath();
+        ctx.arc(dot['x'] * power, dot['y'] * power,3,0,2*Math.PI,true);
+        //arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
+        ctx.fill();
+      }// elseの時はSmile Level
 
+    }
+
+  };
 });
 
 
