@@ -236,6 +236,9 @@ function viewImageURL(imageURL, imgData){
   $('#imageArea').append('<canvas id="c1" width='+ cWidth +' height=' + cHeight +'></canvas>');
   //画像オブジェクトに任意の画像を読み込み
   var img = new Image();
+  //これを入れないと canvas使用時にエラーになる　Uncaught SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': the canvas has been tainted by cross-origin data.
+  img.crossOrigin = "anonymous";
+
   //画像のパス指定
   img.src = imageURL;
   //画像の読み込みが終わったら、canvasに貼付けを実行
@@ -260,8 +263,10 @@ $('#smileBtn').on('click', function(e){
   for(var i = 0; i < faces.length; i++){
     var v = faces[i];
     console.log('v:', v);
+    isDebug =true;
+    if(isDebug){
     for (key in v) {
- //   	alert(key + " : " + v[key]);
+ //   alert(key + " : " + v[key]);
       console.log('dot:', v[key]);
       var dot = v[key];
       if(dot['x'] != undefined ){
@@ -274,8 +279,8 @@ $('#smileBtn').on('click', function(e){
         //arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
         ctx.fill();
       }// elseの時はSmile Level
-
     }
+	}
 
   };
 });
