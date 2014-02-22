@@ -9,7 +9,7 @@
     var rate;//縦横比
     var power;//元画像との倍率
 
-    const SMILE = 100;
+    const SMILE = 60; //笑顔レベルのしきい値
 
 	function PutLog(node, str) {
 		$(node).append('<plaintext>' + str);
@@ -144,34 +144,6 @@
         return this;
 	};
 
-var numMaterials = 3;//fileArry.length;    // ①読み込みたい画像の数
-var loadedCounter = 0;           // ②ロード済Imageオブジェクト数のカウンタ
-var imgObjArry = [];              // ③ロード済Imageオブジェクト用配列
-
-function loadImges(ctx){
-  var imgObj = new Image();               // 新しい Image オブジェクトを作る
-  imgObj.addEventListener('load',         // loadイベントのリッスン
-    function(){
-      loadedCounter++;               // 画像１枚読み込みにつきインクリメント
-      imgObjArry.push(imgObj);          // 読み込み済画像を③に格納
-      if(numMaterials == loadedCounter){   // ①の数 ＝ ②の数ならば描画する
-         display(ctx);
-      }else{
-         loadImges(ctx);                // すべて読み込まれていなければ次を読込
-      }
-  },false);
-
-  imgObj.src = "/img/smile.png";  // ソースのパスを設定
-
-}
-
-function display(ctx){
-    for (var i in imgObjArry){
-        ctx.drawImage(imgObjArry[i], i*10, i*10);
-        imgObjArry[i] = null;
-    }
-}
-
 
 /* xmlから顔画像の必要な要素を取り出す
  * 左右眼の中心、外内端、口中心、外内端、笑顔レベル
@@ -291,13 +263,32 @@ $('#smileBtn').on('click', function(e){
   console.log(imgData);
   //人数と笑っている人がどれかわかる、しきい値を取れる
   //Step 1 顔の特徴点に点を打つ
-  var imgPointArr = [];
-
+  imgPointArr =[];
   var faces = imgData['faces'];
   for(var i = 0; i < faces.length; i++){
     var v = faces[i];
     console.log('v:', v);
-    isDebug =true;
+
+	var smileLevel = v['smileLevel'];
+	var mouseLeft =  v['mouthLeftEnd'];
+	var mouseRight =  v['mouthRightEnd'];
+
+	//口の大きさのマンハッタン距離
+	var mouseDiff = Math.abs(mouseRight['x'] -mouseLeft['x']) + Math.abs(mouseRight['y'] -mouseLeft['y']);
+	console.log(mouseDiff);
+
+	console.log(smileLevel);
+	//笑顔判定
+	if (smileLevel < SMILE){
+		alert(smileLevel);
+		imgPointArr.push([mouseLeft, mouseRight, mouseDiff]);
+	}
+  }
+
+  numMaterials = imgPointArr.length;//3;//fileArry.length;    // ①読み込みたい画像の数
+  loadImges(ctx);
+
+  isDebug =false;
     if(isDebug){
     for (key in v) {
  //   alert(key + " : " + v[key]);
@@ -316,96 +307,47 @@ $('#smileBtn').on('click', function(e){
       }// elseの時はSmile Level
     }
 	}
-	var smileLevel = v['smileLevel'];
-	var mouseLeft =  v['mouthLeftEnd'];
-	var mouseRight =  v['mouthRightEnd'];
-
-	//口の大きさのマンハッタン距離
-	var mouseDiff = Math.abs(mouseRight['x'] -mouseLeft['x']) + Math.abs(mouseRight['y'] -mouseLeft['y']);
-	console.log(mouseDiff);
-
-	console.log(smileLevel);
-	//笑顔判定
-	if (smileLevel < SMILE){
-		imgPointArr.push([mouseLeft, mouseRight, mouseDiff]);
-
-	  // while( !loadFinFlg ) {
-	  // 	console.log('aaa');
-   //    }
-	}
-  }
-
-console.log('===============');
-
-//  imgArr = [];
-  for(var i = 0; i < imgPointArr.length; i++){
-  	console.log(imgPointArr[i][0]['x']);
-  	  	console.log(imgPointArr[i][0]['y']);
-  	x = imgPointArr[i][0]['x'];
-  	y = imgPointArr[i][0]['y'];
-
- }
-loadImges(ctx);
-//   	// 32*32ピクセルのImageDataオブジェクト作成
-// 		var aaa = ctx.getImageData(100, 0, 200, 200);
-// 		var bbb = ctx.createImageData(200, 200);
-// 		//データを別のところに置く
-// 		bbb = aaa;
-// 		rotation = Math.PI * 90 /180;
-// 		ctx.rotate(rotation);
-// //context.drawImage(inMemoryCanvas, x, y)
-// 	//ctx.rotate(-rotation);
-// 		rotate(ctx, c1, rotation,rotate(ctx, c1, rotation));
-
-// 		rotation = Math.PI * 90 /180;
-
-// 		rotate(ctx, c1, rotation);
-
 });
 
 //var fileArry = ['imgName1','imgName2'...]; // 読み込みたい画像のパスの配列
+var imgPointArr =[];
+var numMaterials = imgPointArr.length;//3;//fileArry.length;    // ①読み込みたい画像の数
+var loadedCounter = 0;           // ②ロード済Imageオブジェクト数のカウンタ
+var imgObjArry = [];              // ③ロード済Imageオブジェクト用配列
 
+function loadImges(ctx){
+  var imgObj = new Image();               // 新しい Image オブジェクトを作る
+  imgObj.addEventListener('load',         // loadイベントのリッスン
+    function(){
+      loadedCounter++;               // 画像１枚読み込みにつきインクリメント
+      imgObjArry.push(imgObj);          // 読み込み済画像を③に格納
+      if(numMaterials == loadedCounter){   // ①の数 ＝ ②の数ならば描画する
+         display(ctx);
+      }else{
+         loadImges(ctx);                // すべて読み込まれていなければ次を読込
+      }
+  },false);
 
+  imgObj.src = "/img/smile.png";  // ソースのパスを設定
 
-
-
-
-
-//以下使ってない
-var myImageData, rotating = false;
-
-
-var rotate = function (context, canvas, angle, callback) {
-	var cw = canvas.width;
-	var ch = canvas.height;
-    if (!rotating) {
-        rotating = true;
-        // store current data to an image
-        myImageData = new Image();
-        myImageData.src = canvas.toDataURL();
-
-       myImageData.onload = function () {
-            // reset the canvas with new dimensions
-            canvas.width = ch;
-            canvas.height = cw;
-            cw = canvas.width;
-            ch = canvas.height;
-
-            context.save();
-            // translate and rotate
-            context.translate(cw, ch / cw);
-            context.rotate(angle);
-            // draw the previows image, now rotated
-            context.drawImage(myImageData, 0, 0);
-            context.restore();
-
-            // clear the temporary image
-            myImageData = null;
-
-            rotating = false;
-        }
-    }
-    callback;
 }
+
+function display(ctx){
+    for (var i in imgObjArry){
+//        ctx.drawImage(imgObjArry[i], i*10, i*10);
+//        ctx.drawImage(imgObjArry[i], imgPointArr[i][0]['x'], imgPointArr[i][0]['y'], imgPointArr[2], imgPointArr[2] * 0.5);
+	ctx.drawImage(imgObjArry[i],
+		imgPointArr[i][0]['x'] + imgPointArr[i][2]/2, imgPointArr[i][0]['y'] + imgPointArr[i][2]/2/2/2,
+	    imgPointArr[i][2] * 1.2, imgPointArr[i][2] * 0.8);
+        console.log(imgPointArr[i]);
+        imgObjArry[i] = null;
+    }
+}
+
+
+
+
+
+
 
 })(jQuery);
