@@ -334,10 +334,10 @@ function loadImges(ctx){
 
 function display(ctx){
     for (var i in imgObjArry){
-//        ctx.drawImage(imgObjArry[i], i*10, i*10);
-//        ctx.drawImage(imgObjArry[i], imgPointArr[i][0]['x'], imgPointArr[i][0]['y'], imgPointArr[2], imgPointArr[2] * 0.5);
+
 	ctx.drawImage(imgObjArry[i],
-		imgPointArr[i][0]['x'] + imgPointArr[i][2]/2, imgPointArr[i][0]['y'] + imgPointArr[i][2]/2/2/2,
+		imgPointArr[i][0]['x'] * power - 0.02 * (imgPointArr[i][2]  * power) ,
+		 imgPointArr[i][0]['y'] * power - 0.01 * (imgPointArr[i][2]  * power),
 	    imgPointArr[i][2] * 1.2, imgPointArr[i][2] * 0.8);
         console.log(imgPointArr[i]);
         imgObjArry[i] = null;
