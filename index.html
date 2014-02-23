@@ -28,7 +28,7 @@
     <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon-57-precomposed.png">
     <link rel="shortcut icon" href="img/favicon.png">
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/scripts.js"></script>
   </head>
@@ -38,78 +38,6 @@
     <div class="container">
       <div class="row clearfix">
          <div class="col-md-12 column">
-
-<!--          <nav class="navbar navbar-default" role="navigation">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">Brand</a>
-            </div>
-
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-              <ul class="nav navbar-nav">
-                <li class="active">
-                  <a href="#">Link</a>
-                </li>
-                <li>
-                  <a href="#">Link</a>
-                </li>
-                <li class="dropdown">
-                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
-                 <ul class="dropdown-menu">
-                  <li>
-                    <a href="#">Action</a>
-                  </li>
-                  <li>
-                    <a href="#">Another action</a>
-                  </li>
-                  <li>
-                    <a href="#">Something else here</a>
-                  </li>
-                  <li class="divider">
-                  </li>
-                  <li>
-                    <a href="#">Separated link</a>
-                  </li>
-                  <li class="divider">
-                  </li>
-                  <li>
-                    <a href="#">One more separated link</a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-            <form class="navbar-form navbar-left" role="search">
-              <div class="form-group">
-                <input type="text" class="form-control" />
-              </div> <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-            <ul class="nav navbar-nav navbar-right">
-              <li>
-                <a href="#">Link</a>
-              </li>
-              <li class="dropdown">
-               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
-               <ul class="dropdown-menu">
-                <li>
-                  <a href="#">Action</a>
-                </li>
-                <li>
-                  <a href="#">Another action</a>
-                </li>
-                <li>
-                  <a href="#">Something else here</a>
-                </li>
-                <li class="divider">
-                </li>
-                <li>
-                  <a href="#">Separated link</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-
-      </nav>-->
-
 
       <div class="jumbotron">
         <h1>
@@ -129,40 +57,64 @@
               <div class="col-lg-4">
                 <input type="button" value="search" onclick="search();" class=" btn btn-primary btn-lg">
               </div>
+
             </div>
+
           </fieldset>
         </form>
+
+        <!-- TODO: merge -->
+        <div class="col-lg-4">
+          URL: <input id="imageURL" type="text" value='https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-frc3/t1/1379366_469538066487660_451315449_n.jpg' /> <input id="submit" type="button" value="実行" class="selectImage"/>
+        </div>
 
         <!-- images -->
         <div id='images'>
         </div>
 
-        <!-- images -->
-        <!-- inputfile -->
         <br>
       </div>
-      <div class="row clearfix">
-      <div class="column col-md-12">
-        <img alt="140x140" src="http://lorempixel.com/800/600/people" />
-        <br>
 
-        <button type="button" class="btn btn-primary btn-block btn-lg">Smile!</button>
+      <!-- 元画像表示エリア -->
+      <div class="row clearfix">
+        <div class="column col-md-12">
+          <div id="orgImageArea"></div>
+          <br>
+
+          <button id="smileBtn" type="button" class="btn btn-primary btn-block btn-lg">Smile!</button>
+        </div>
       </div>
+
+      <!-- 実行結果表示 (submit 用に非表示にした) -->
+      <div id="res" style="display: none;"></div>
     </div>
+
+
+    <!-- Before / After エリア -->
     <div class="row clearfix">
       <div class="col-md-6 column">
-        <h3>
-          Before
-        </h3><img alt="140x140" src="http://lorempixel.com/400/300/people" />
+        <h3>Before</h3>
+        <div id="orgImageArea2"></div>
       </div>
       <div class="col-md-6 column">
-        <h3>
-          After
-        </h3><img alt="140x140" src="http://lorempixel.com/400/300/people" />
+        <h3>After</h3>
+        <div id="imageArea"></div>
       </div>
-    </div>
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  $(function(){
+    $("#submit.selectImage").click(function() {
+      console.log( "imageURL Submit" );
+      var imageURL = $("#imageURL").val();
+      $('#res').PostImageURL('RCGHACKA02', imageURL);
+      $('body').viewImageURL(imageURL);
+    });
+  });
+</script>
+<script type="text/javascript" src="PostImageFacePUXCustom/PostImageFace.js"></script>
+
 </body>
 </html>
