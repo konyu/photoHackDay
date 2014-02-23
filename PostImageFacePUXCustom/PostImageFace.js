@@ -330,7 +330,7 @@ function loadImges(ctx){
       }
   },false);
 
-  imgObj.src = "/img/smile.png";  // ソースのパスを設定
+  imgObj.src = "/PostImageFacePUXCustom/img/smile.png";  // ソースのパスを設定
 
 }
 
