@@ -23,7 +23,6 @@ function submitStop(e){
       return false;
 }
 
-
 // 検索
 function search() {
   start=0;
@@ -32,10 +31,9 @@ function search() {
 }
 
 // 画像選択
-function selectImg(imageUrl){
-// 画像を選択したあとの処理をここに書く
-var url = imageUrl;
-// alert(url);
+function selectImg(imageURL){
+  $('#res').PostImageURL('RCGHACKA02', imageURL);
+  $('body').viewImageURL(imageURL);
 };
 
 
