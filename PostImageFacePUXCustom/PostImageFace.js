@@ -236,7 +236,7 @@ function viewImageURL(imageURL, imgData){
 
   rate = imgHeight / imgWidth;
   power = cWidth / imgWidth;
-
+  $('#imageArea').hide();
   $('#imageArea').append('<canvas id="c1" width='+ cWidth +' height=' + cHeight +'></canvas>');
   $('#orgImageArea').append('<img src="'+imageURL+'" width="' + cWidth + '" height="' + cHeight + '" >');
   $('#orgImageArea2').append('<img src="'+imageURL+'" width="' + cWidth + '" height="' + cHeight + '" >');
@@ -309,6 +309,7 @@ $('#smileBtn').on('click', function(e){
       }// elseの時はSmile Level
     }
 	}
+  $('#imageArea').show();
 });
 
 //var fileArry = ['imgName1','imgName2'...]; // 読み込みたい画像のパスの配列
