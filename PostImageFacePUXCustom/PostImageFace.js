@@ -238,6 +238,7 @@ function viewImageURL(imageURL, imgData){
   power = cWidth / imgWidth;
 
   $('#imageArea').append('<canvas id="c1" width='+ cWidth +' height=' + cHeight +'></canvas>');
+  $('#orgImageArea').append('<img src="'+imageURL+'" width="32" height="32" >');
   //画像オブジェクトに任意の画像を読み込み
   var img = new Image();
   //これを入れないと canvas使用時にエラーになる Uncaught SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': the canvas has been tainted by cross-origin data.
