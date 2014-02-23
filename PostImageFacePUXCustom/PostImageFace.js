@@ -309,7 +309,7 @@ $('#smileBtn').on('click', function(e){
       }// elseの時はSmile Level
     }
 	}
-  $('#imageArea').show();
+  $('#imageArea').fadeIn("slow");
 });
 
 //var fileArry = ['imgName1','imgName2'...]; // 読み込みたい画像のパスの配列
