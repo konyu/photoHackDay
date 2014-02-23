@@ -4,7 +4,7 @@
 	var REQ_URL = "http://eval.api.pux.co.jp:8080";
 	// リクエストパス
 	var REQ_PATH = "/webapi/face.do";
-
+    var imgDatasArr = [];
     var imgData;
     var rate;//縦横比
     var power;//元画像との倍率
@@ -281,7 +281,7 @@ $('#smileBtn').on('click', function(e){
 	console.log(smileLevel);
 	//笑顔判定
 	if (smileLevel < SMILE){
-		alert(smileLevel);
+		console.log("smile level = " + smileLevel);
 		imgPointArr.push([mouseLeft, mouseRight, mouseDiff]);
 	}
   }
