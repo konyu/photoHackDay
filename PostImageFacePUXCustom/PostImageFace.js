@@ -9,7 +9,7 @@
     var rate;//縦横比
     var power;//元画像との倍率
 
-    const SMILE = 60; //笑顔レベルのしきい値
+    const SMILE = 57; //笑顔レベルのしきい値
 
 	function PutLog(node, str) {
 		$(node).append('<plaintext>' + str);
