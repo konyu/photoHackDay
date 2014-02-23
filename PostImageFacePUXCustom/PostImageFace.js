@@ -231,14 +231,14 @@ function getFaceDataFromXML(xml){
 function viewImageURL(imageURL, imgData){
   imgWidth = imgData['width'];
   imgHeight = imgData['height'];
-  cWidth = 1000;
-  cHeight = 1000;
+  cWidth = 500;
+  cHeight = 500;
 
   rate = imgHeight / imgWidth;
   power = cWidth / imgWidth;
 
   $('#imageArea').append('<canvas id="c1" width='+ cWidth +' height=' + cHeight +'></canvas>');
-  $('#orgImageArea').append('<img src="'+imageURL+'" width="32" height="32" >');
+  $('#orgImageArea').append('<img src="'+imageURL+'" width="' + cWidth + '" height="' + cHeight + '" >');
   //画像オブジェクトに任意の画像を読み込み
   var img = new Image();
   //これを入れないと canvas使用時にエラーになる Uncaught SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': the canvas has been tainted by cross-origin data.
@@ -338,8 +338,8 @@ function display(ctx){
 
 	ctx.drawImage(imgObjArry[i],
 		imgPointArr[i][0]['x'] * power - 0.02 * (imgPointArr[i][2]  * power) ,
-		 imgPointArr[i][0]['y'] * power - 0.01 * (imgPointArr[i][2]  * power),
-	    imgPointArr[i][2] * 1.2, imgPointArr[i][2] * 0.8);
+		 imgPointArr[i][0]['y'] * power - 0.02 * (imgPointArr[i][2]  * power),
+	    imgPointArr[i][2] * power* 1.2, imgPointArr[i][2] * power * 0.8);
         console.log(imgPointArr[i]);
         imgObjArry[i] = null;
     }
